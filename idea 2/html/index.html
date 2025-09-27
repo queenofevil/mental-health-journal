@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mental Health Chatbot</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #e6f2ff;
+      color: #333;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2em;
+      color: #0077cc;
+    }
+
+    .subtitle {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+    }
+
+    .mood-buttons button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      cursor: pointer;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .card {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Hi Soumya 👋</h1>
+    <p class="subtitle">How are you feeling today?</p>
+
+    <div class="mood-buttons">
+      <button onclick="selectMood('Happy')">😊 Happy</button>
+      <button onclick="selectMood('Okay')">😐 Okay</button>
+      <button onclick="selectMood('Sad')">😔 Sad</button>
+      <button onclick="selectMood('Angry')">😠 Angry</button>
+    </div>
+
+    <div class="features">
+      <div class="card" onclick="navigateTo('chatbot')">🗣️ Talk to Bot</div>
+      <div class="card" onclick="navigateTo('journal')">📓 Journal</div>
+      <div class="card" onclick="navigateTo('tracker')">📊 Mood Tracker</div>
+      <div class="card" onclick="navigateTo('counselor')">🧑‍⚕️ Counselor</div>
+    </div>
+  </div>
+
+  <script>
+    function selectMood(mood) {
+      alert(`You selected: ${mood}`);
+      // Later: Send to backend or store in localStorage
+    }
+
+    function navigateTo(feature) {
+      alert(`Navigating to: ${feature}`);
+      // Later: window.location.href = `${feature}.html`;
+    }
+  </script>
+</body>
+</html>

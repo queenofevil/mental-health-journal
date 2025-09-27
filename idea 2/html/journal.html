@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Journal Entry</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #f0f8ff;
+      color: #333;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #0077cc;
+    }
+
+    #welcomeUser {
+      text-align: center;
+      font-size: 1.1em;
+      margin-bottom: 10px;
+      color: #444;
+    }
+
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: 500;
+    }
+
+    textarea {
+      width: 100%;
+      height: 150px;
+      padding: 10px;
+      margin-top: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      resize: none;
+      font-size: 1em;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .mood-display {
+      text-align: center;
+      font-size: 1.2em;
+      margin-top: 10px;
+    }
+
+    button {
+      margin-top: 30px;
+      padding: 12px 20px;
+      font-size: 1em;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: block;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+
+    .logout-button {
+      background-color: #ff4d4d;
+      margin-top: 20px;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .back-link a {
+      color: #0077cc;
+      text-decoration: none;
+    }
+
+    #journalHistory {
+      margin-top: 40px;
+    }
+
+    .entry-box {
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #fff;
+    }
+
+    canvas {
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="welcomeUser"></div>
+    <h1>📓 Journal Entry</h1>
+
+    <label for="entry">Write your thoughts:</label>
+    <textarea id="entry" placeholder="Type your thoughts here..."></textarea>
+
+    <label for="mood">How are you feeling (1–10)?</label>
+    <input type="range" id="mood" min="1" max="10" value="5" />
+    <div class="mood-display">Mood: 5 😐</div>
+
+    <button onclick="submitJournal()">Submit Entry</button>
+
+    <h2>🕒 Journal History</h2>
+    <div id="journalHistory"></div>
+
+    <h2>📈 Mood Over Time</h2>
+    <canvas id="moodChart" width="600" height="300"></canvas>
+
+    <button class="logout-button" onclick="logout()">Logout</button>
+
+    <div class="back-link">
+      <a href="index.html">← Back to Home</a>
+    </div>
+  </div>
+
+  <script>
+    const userId = localStorage.getItem("user_id");
+    const username = localStorage.getItem("username");
+
+    if (!userId || !username) {
+      alert("Please login first.");
+      window.location.href = "login.html";
+    }
+
+    document.getElementById("welcomeUser").textContent = `Welcome, ${username}! 👋`;
+
+    const moodSlider = document.getElementById("mood");
+    const moodDisplay = document.querySelector(".mood-display");
+
+    moodSlider.addEventListener("input", () => {
+      const moodValue = moodSlider.value;
+      let emoji = "😐";
+      if (moodValue >= 8) emoji = "😊";
+      else if (moodValue <= 3) emoji = "😔";
+      else emoji = "😐";
+      moodDisplay.textContent = `Mood: ${moodValue} ${emoji}`;
+    });
+
+    function submitJournal() {
+      const entry = document.getElementById("entry").value.trim();
+      const mood = document.getElementById("mood").value;
+
+      if (!entry) {
+        alert("Please write something before submitting.");
+        return;
+      }
+
+      fetch("http://127.0.0.1:5000/submit_journal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ entry, mood, user_id: userId })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.message);
+        document.getElementById("entry").value = "";
+        document.getElementById("mood").value = 5;
+        moodDisplay.textContent = "Mood: 5 😐";
+        loadJournalHistory(); // Refresh history
+      })
+      .catch(err => {
+        console.error("Error:", err);
+        alert("Something went wrong. Try again.");
+      });
+    }
+
+    function loadJournalHistory() {
+      fetch("http://127.0.0.1:5000/get_journals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: userId })
+      })
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById("journalHistory");
+        container.innerHTML = "";
+
+        const labels = [];
+        const moodData = [];
+
+        if (data.length === 0) {
+          container.innerHTML = "<p>No entries yet.</p>";
+          return;
+        }
+
+        data.forEach(journal => {
+          const div = document.createElement("div");
+          div.className = "entry-box";
+          div.innerHTML = `
+            <strong>Mood:</strong> ${journal.mood} <br/>
+            <strong>Entry:</strong> ${journal.entry} <br/>
+            <small><em>${new Date(journal.timestamp).toLocaleString()}</em></small>
+          `;
+          container.appendChild(div);
+
+          labels.push(new Date(journal.timestamp).toLocaleDateString());
+          moodData.push(journal.mood);
+        });
+
+        renderMoodChart(labels, moodData);
+      })
+      .catch(err => {
+        console.error("Error loading journal history:", err);
+      });
+    }
+
+    function renderMoodChart(labels, moodData) {
+      const ctx = document.getElementById("moodChart").getContext("2d");
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Mood",
+            data: moodData,
+            borderColor: "#0077cc",
+            backgroundColor: "rgba(0, 119, 204, 0.2)",
+            fill: true,
+            tension: 0.3,
+            pointRadius: 4
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              min: 1,
+              max: 10,
+              title: {
+                display: true,
+                text: "Mood Level"
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: "Date"
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function logout() {
+      localStorage.removeItem("user_id");
+      localStorage.removeItem("username");
+      alert("You have been logged out.");
+      window.location.href = "login.html";
+    }
+
+    window.onload = loadJournalHistory;
+  </script>
+</body>
+</html>

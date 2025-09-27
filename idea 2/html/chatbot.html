@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Talk to Bot</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #f0f8ff;
+      color: #333;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #0077cc;
+    }
+
+    .chat-box {
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      padding: 15px;
+      height: 400px;
+      overflow-y: auto;
+      background-color: #ffffff;
+    }
+
+    .message {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      max-width: 80%;
+    }
+
+    .user {
+      background-color: #d0eaff;
+      align-self: flex-end;
+      text-align: right;
+    }
+
+    .bot {
+      background-color: #e6ffe6;
+      align-self: flex-start;
+      text-align: left;
+    }
+
+    .input-area {
+      display: flex;
+      margin-top: 20px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+    }
+
+    button {
+      margin-left: 10px;
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .back-link a {
+      color: #0077cc;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🗣️ Talk to Bot</h1>
+
+    <div class="chat-box" id="chatBox"></div>
+
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Type your message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <div class="back-link">
+      <a href="index.html">← Back to Home</a>
+    </div>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById("chatBox");
+
+    function sendMessage() {
+      const input = document.getElementById("userInput");
+      const message = input.value.trim();
+      if (!message) return;
+
+      addMessage(message, "user");
+      input.value = "";
+
+      // Dummy bot response (later connect to backend)
+      setTimeout(() => {
+        const botReply = getBotReply(message);
+        addMessage(botReply, "bot");
+      }, 500);
+    }
+
+    function addMessage(text, sender) {
+      const msg = document.createElement("div");
+      msg.classList.add("message", sender);
+      msg.textContent = text;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function getBotReply(userText) {
+      // Simple keyword-based replies
+      userText = userText.toLowerCase();
+      if (userText.includes("sad") || userText.includes("depressed")) {
+        return "I'm here for you. Want to talk more about it?";
+      } else if (userText.includes("happy")) {
+        return "That's wonderful! Keep smiling 😊";
+      } else if (userText.includes("anxious") || userText.includes("nervous")) {
+        return "Try taking a deep breath. You're doing great.";
+      } else {
+        return "Tell me more. I'm listening.";
+      }
+    }
+  </script>
+</body>
+</html>

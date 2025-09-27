@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login / Signup</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #e6f2ff;
+      color: #333;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: auto;
+      padding: 30px;
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin-top: 50px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #0077cc;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+
+    .toggle {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .toggle a {
+      color: #0077cc;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="authBox">
+    <h2 id="formTitle">Login</h2>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="handleAuth()">Login</button>
+
+    <div class="toggle">
+      <span id="toggleText">Don't have an account?</span>
+      <a onclick="toggleForm()">Signup</a>
+    </div>
+  </div>
+
+  <script>
+    let isLogin = true;
+
+    function toggleForm() {
+      isLogin = !isLogin;
+      document.getElementById("formTitle").textContent = isLogin ? "Login" : "Signup";
+      document.querySelector("button").textContent = isLogin ? "Login" : "Signup";
+      document.getElementById("toggleText").textContent = isLogin
+        ? "Don't have an account?"
+        : "Already have an account?";
+    }
+
+    function handleAuth() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!username || !password) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      if (isLogin) {
+        alert(`Logged in as ${username}`);
+        // Later: Send login request to backend
+        window.location.href = "index.html";
+      } else {
+        alert(`Account created for ${username}`);
+        // Later: Send signup request to backend
+        window.location.href = "index.html";
+      }
+    }
+  </script>
+</body>
+</html>
